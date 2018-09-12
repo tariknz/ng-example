@@ -1,21 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '../../models/user.model';
+import { Observable } from 'rxjs/Observable';
+import { AuthService } from '../../services/auth.service';
+import { Subject } from 'rxjs/Subject';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'ng-e-app-header',
   templateUrl: './app-header.component.html',
-  styleUrls: ['./app-header.component.scss']
+  styleUrls: [ './app-header.component.scss' ]
 })
 export class AppHeaderComponent implements OnInit {
-  user: User = {
-    firstName: 'Ahsan',
-    lastName: 'Ayaz'
-  };
-  isLoggedIn: boolean;
-  constructor() { }
+  public user$: Observable<User>;
+  public isLoggedIn$: Observable<boolean>;
+
+  private readonly _destroyed = new Subject<void>();
+
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    this.isLoggedIn = false;
+    this.user$ = this.authService.loggedInUser().pipe(takeUntil(this._destroyed));
+    this.isLoggedIn$ = this.authService.isLoggedIn().pipe(takeUntil(this._destroyed));
   }
 
   /**
@@ -23,15 +28,7 @@ export class AppHeaderComponent implements OnInit {
    * @desc Logs the user in
    */
   login() {
-    this.isLoggedIn = true;
-  }
-
-  /**
-   * @author Ahsan Ayaz
-   * @desc Logs the user in
-   */
-  signup() {
-    this.isLoggedIn = true;
+    this.authService.login();
   }
 
   /**
@@ -39,7 +36,20 @@ export class AppHeaderComponent implements OnInit {
    * @desc Logs the user out
    */
   logout() {
-    this.isLoggedIn = false;
+    this.authService.logout();
   }
 
+  /**
+   * @author Ahsan Ayaz
+   * @desc Logs the user in
+   */
+  signup() {
+    this.logout();
+  }
+
+  ngOnDestroy() {
+    // emits event to notify destroy life-cycle hook was run
+    this._destroyed.next();
+    this._destroyed.complete();
+  }
 }
