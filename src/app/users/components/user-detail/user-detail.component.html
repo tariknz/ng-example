@@ -1,0 +1,20 @@
+<div class="profile" *ngIf="currentUser$ | async; let currentUser; else loading">
+  <h1>{{ currentUser.firstName + ' ' + currentUser.lastName | titlecase }}</h1>
+  <img [src]="currentUser.imageUrl" />
+  <div>
+    <p>First Name:</p>
+    <strong>{{ currentUser.firstName | titlecase }}</strong>
+    <p>Last Name:</p>
+    <strong>{{ currentUser.lastName | titlecase }}</strong>
+    <p>Email:</p>
+    <strong>{{ currentUser.email }}</strong>
+    <p>Phone:</p>
+    <strong>{{ currentUser.phone }}</strong>
+  </div>
+  <p class="profile-footer">
+    <button [routerLink]="['/users']">Back</button>
+  </p>
+</div>
+<ng-template #loading>
+  Loading ...
+</ng-template>
