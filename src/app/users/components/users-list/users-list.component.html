@@ -1,5 +1,5 @@
-<ul>
-  <li [routerLink]="user.id" *ngFor="let user of users$ | async">
+<ul *ngIf="users$ | async; let users; else loading">
+  <li [routerLink]="user.id" *ngFor="let user of users">
     <figure>
       <img [src]="user.imageUrl" />
     </figure>
@@ -10,3 +10,6 @@
     </div>
   </li>
 </ul>
+<ng-template #loading>
+  Loading...
+</ng-template>
